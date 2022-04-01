@@ -58,7 +58,7 @@ def create_app(test_config=None):
     #         Response body keys: 'success'
     # TEST: When completed, you will be able to click on stars to update a book's rating and it will persist after refresh
 
-    @app.route('/books/<int:book_id>', methods=['GET', 'PATCH'])
+    @app.route('/books/<int:book_id>', methods=['PATCH'])
     def update_book(book_id):
         
         '''
