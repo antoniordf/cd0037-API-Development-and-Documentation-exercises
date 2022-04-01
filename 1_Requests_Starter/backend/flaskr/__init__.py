@@ -156,6 +156,14 @@ def create_app(test_config=None):
         except:
             abort(422)
 
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+            'success': False,
+            'error': 400,
+            'message': 'Server cannot or will not process the request due to client error (for example, malformed request syntax, invalid request message framing, or deceptive request routing).'
+        }), 400
+    
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
