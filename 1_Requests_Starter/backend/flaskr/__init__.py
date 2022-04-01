@@ -59,7 +59,7 @@ def create_app(test_config=None):
     # TEST: When completed, you will be able to click on stars to update a book's rating and it will persist after refresh
 
     @app.route('/books/<int:book_id>', methods=['PATCH'])
-    def update_book_rating(book_id):
+    def update_book(book_id):
         
         '''
         The way to get the data inputted by client in browser into the route is by using the 
@@ -70,7 +70,6 @@ def create_app(test_config=None):
 
         try:
             book = Book.query.filter_by(Book.id==book_id).one_or_none()
-
             if book is None:
                 abort(404)
             
