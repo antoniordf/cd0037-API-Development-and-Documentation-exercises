@@ -88,6 +88,23 @@ def create_app(test_config=None):
     #        Response body keys: 'success', 'deleted'(id of deleted book), 'books' and 'total_books'
     #        Response body keys: 'success', 'books' and 'total_books'
 
+    @app.route('/delete/<int:book_id>')
+    def delete(book_id):
+
+        body = request.get_json()
+
+        try:
+            book = Book.query.filter_by(Book.id==book_id).one_or_none()
+
+            if book is None:
+                abort(404)
+
+            book.delete()
+
+        except:
+            abort(400)
+
+
     # TEST: When completed, you will be able to delete a single book by clicking on the trashcan.
 
     # @TODO: Write a route that create a new book.
