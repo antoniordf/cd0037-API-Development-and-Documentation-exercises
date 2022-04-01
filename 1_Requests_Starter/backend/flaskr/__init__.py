@@ -25,7 +25,7 @@ def create_app(test_config=None):
     @app.after_request
     def after_request(response):
         response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,true")
-        response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
+        response.headers.add("Access-Control-Allow-Methods", "GET,PUT,PATCH,POST,DELETE,OPTIONS")
         return response
 
     # @TODO: Write a route that retrivies all books, paginated.
@@ -54,6 +54,35 @@ def create_app(test_config=None):
     #         and should follow API design principles regarding method and route.
     #         Response body keys: 'success'
     # TEST: When completed, you will be able to click on stars to update a book's rating and it will persist after refresh
+
+    @app.route('/books/<int:book_id>', methods=['PATCH'])
+    def update_book_rating(book_id):
+        
+        '''
+        The way to get the data inputted by client in browser into the route is by using the 
+        request object. There are 3 ways to get this data into the route 1-URL query parameters,
+        2- Forms and 3- JSON. See link for more details: https://www.youtube.com/watch?v=hAEJajltHxc
+         '''
+        body = request.get_json() 
+
+        try:
+            book = Book.query.filter_by(Book.id==book_id).one_or_none()
+
+            if book is None:
+                abort(404)
+            
+            if 'rating' in body:
+                book.rating = int(body.get('rating'))
+
+            book.update() #Class book in models.py has an update method which executes a commit()
+
+            return jsonify({
+                'success': True
+            })
+        
+        except:
+            abort(400)
+
 
     # @TODO: Write a route that will delete a single book.
     #        Response body keys: 'success', 'deleted'(id of deleted book), 'books' and 'total_books'
