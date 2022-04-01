@@ -43,6 +43,9 @@ def create_app(test_config=None):
         books = Book.query.order_by(Book.id).all()
         formatted_books = [book.format() for book in books]
 
+        if len(formatted_books) == 0:
+            abort(404)
+
         return jsonify({
             'success': True,
             'books': formatted_books[start:end],
