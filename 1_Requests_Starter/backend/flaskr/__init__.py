@@ -72,7 +72,7 @@ def create_app(test_config=None):
                 abort(404)
             
             if 'rating' in body:
-                book.rating = int(body.get('rating'))
+                book.rating = int(body.get('rating')) #The rating returned will be a string so we need "int".
 
             book.update() #Class book in models.py has an update method which executes a commit()
 
