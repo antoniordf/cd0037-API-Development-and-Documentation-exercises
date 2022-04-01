@@ -77,7 +77,8 @@ def create_app(test_config=None):
             book.update() #Class book in models.py has an update method which executes a commit()
 
             return jsonify({
-                'success': True
+                'success': True,
+                'id': book.id
             })
         
         except:
