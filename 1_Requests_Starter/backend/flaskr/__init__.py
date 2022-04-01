@@ -89,7 +89,7 @@ def create_app(test_config=None):
     #        Response body keys: 'success', 'books' and 'total_books'
 
     @app.route('/delete/<int:book_id>', methods=['DELETE'])
-    def delete(book_id):
+    def delete_book(book_id):
 
         body = request.get_json()
 
