@@ -14,6 +14,16 @@ BOOKS_PER_SHELF = 8
 #   - Make sure for each route that you're thinking through when to abort and with which kind of error
 #   - If you change any of the response body keys, make sure you update the frontend to correspond.
 
+def paginate_books(request, selection):
+        page = request.args.get('page', 1, type=int)
+        start = (page - 1) * BOOKS_PER_SHELF
+        end = start + BOOKS_PER_SHELF
+
+        books = [book.format() for book in selection]
+        current_books = books[start:end]
+
+        return current_books
+
 
 def create_app(test_config=None):
     # create and configure the app
@@ -37,19 +47,17 @@ def create_app(test_config=None):
 
     @app.route('/books', methods=['GET'])
     def get_books():
-        page = request.args.get('page', 1, type=int)
-        start = (page - 1) * BOOKS_PER_SHELF
-        end = start + BOOKS_PER_SHELF
-        books = Book.query.order_by(Book.id).all()
-        formatted_books = [book.format() for book in books]
+        
+        selection = Book.query.order_by(Book.id).all()
+        current_books = paginate_books(request, selection)
 
-        if len(formatted_books) == 0:
+        if len(current_books) == 0:
             abort(404)
 
         return jsonify({
             'success': True,
-            'books': formatted_books[start:end],
-            'total_books': len(formatted_books)
+            'books': current_books,
+            'total_books': len(Book.query.all())
         })
 
     # @TODO: Write a route that will update a single book's rating.
@@ -94,8 +102,6 @@ def create_app(test_config=None):
     @app.route('/delete/<int:book_id>', methods=['DELETE'])
     def delete_book(book_id):
 
-        body = request.get_json()
-
         try:
             book = Book.query.filter_by(Book.id==book_id).one_or_none()
 
@@ -103,9 +109,18 @@ def create_app(test_config=None):
                 abort(404)
 
             book.delete()
+            selection = Book.query.order_by(Book.id).all()
+            current_books = paginate_books(request, selection)
+
+            return jsonify({
+                'success': True,
+                'deleted': book_id,
+                'books': current_books,
+                'total_books': len(Book.query.all())
+            })
 
         except:
-            abort(400)
+            abort(422)
 
 
     # TEST: When completed, you will be able to delete a single book by clicking on the trashcan.
