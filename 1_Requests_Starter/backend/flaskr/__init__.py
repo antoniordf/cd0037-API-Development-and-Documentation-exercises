@@ -66,14 +66,14 @@ def create_app(test_config=None):
     #         Response body keys: 'success'
     # TEST: When completed, you will be able to click on stars to update a book's rating and it will persist after refresh
 
-    @app.route('/books/<int:book_id>', methods=['PATCH'])
+    @app.route('/books/<int:book_id>', methods=['GET', 'PATCH'])
     def update_book_rating(book_id):
         
         '''
         The way to get the data inputted by client in browser into the route is by using the 
         request object. There are 3 ways to get this data into the route 1-URL query parameters,
         2- Forms and 3- JSON. See link for more details: https://www.youtube.com/watch?v=hAEJajltHxc
-         '''
+        '''
         body = request.get_json() 
 
         try:
