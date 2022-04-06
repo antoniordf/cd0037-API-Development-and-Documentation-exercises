@@ -53,6 +53,24 @@ class BookTestCase(unittest.TestCase):
     # @TODO: Write tests for search - at minimum two
     #        that check a response when there are results and when there are none
 
+    def test_get_book_search_with_results(self):
+        res = self.client().post('/books', json={'search': 'Novel'})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["total_books"])
+        self.assertEqual(len(data["books"]), 4) #Because there are 4 books with word 'novel' in title in our database
+
+    def test_get_book_search_without_results(self):
+        res = self.client().post('/books', json={'search': 'applejacks'})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200) #Why is request still successful?
+        self.assertEqual(data["success"], True)
+        self.assertEqual(data["total_books"], 0) #We want to assert that the list of books returned is 0
+        self.assertEqual(len(data["books"]), 0) #We want to assert that the len of the list returned is 0
+
     def test_update_book_rating(self):
         res = self.client().patch("/books/5", json={"rating": 1})
         data = json.loads(res.data)
@@ -71,14 +89,14 @@ class BookTestCase(unittest.TestCase):
         self.assertEqual(data["message"], "bad request")
 
     def test_delete_book(self):
-        res = self.client().delete("/books/1")
+        res = self.client().delete("/books/8")
         data = json.loads(res.data)
 
-        book = Book.query.filter(Book.id == 1).one_or_none()
+        book = Book.query.filter(Book.id == 8).one_or_none()
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
-        self.assertEqual(data["deleted"], 1)
+        self.assertEqual(data["deleted"], 8)
         self.assertTrue(data["total_books"])
         self.assertTrue(len(data["books"]))
         self.assertEqual(book, None)
